@@ -17,8 +17,8 @@ SELECT_CATEGORY = "SELECT id, * FROM categories WHERE id = %s;"
 SELECT_ENTRY = "SELECT id, * FROM entries WHERE id = %s;"
 SELECT_ENTRIES_OF_DATE = "SELECT id, * FROM entries WHERE date = %s;"
 SELECT_A_CATEGORYS_ENTRIES_OF_DATE = "SELECT id, * FROM entries WHERE date = %s AND category_id = %s;"
-SELECT_ENTRY_TITLES = "SELECT id, title FROM entries;"
-SELECT_ENTRY_TITLES_OF_DATE = "SELECT id, title FROM entries WHERE date = %s;"
+SELECT_ENTRY_TITLES = "SELECT id, title, category_id FROM entries;"
+SELECT_ENTRY_TITLES_OF_DATE = "SELECT id, title, category_id FROM entries WHERE date = %s;"
 SELECT_A_CATEGORYS_TITLES_OF_DATE = "SELECT id, title FROM entries WHERE date = %s AND category_id = %s;"
 
 SELECT_CATEGORY_TITLES = "SELECT id, title FROM entries WHERE category_id = %s;"
@@ -39,12 +39,12 @@ def create_tables(connection):
             cursor.execute(CREATE_ENTRIES)
 
 
-def add_category(connection, category_name: str):
+def add_category(connection, category_name):
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(INSERT_CATEGORY, (category_name,))
             category_id = cursor.fetchone()[0]
-            print(f"Added category {category_name} with id {category_id}")
+            return category_id
 
 
 def add_entry(connection, entry_title, entry_content, entry_date, entry_time, category_id):
@@ -52,7 +52,7 @@ def add_entry(connection, entry_title, entry_content, entry_date, entry_time, ca
         with connection.cursor() as cursor:
             cursor.execute(INSERT_ENTRY, (entry_title, entry_content, entry_date, entry_time, category_id))
             entry_id = cursor.fetchone()[0]
-            print(f"Added entry {entry_title} with id {entry_id}")
+            return entry_id
 
 
 def get_categories(connection):
@@ -69,17 +69,18 @@ def get_entries(connection):
             return cursor.fetchall()
 
 
-def get_category(connection, category_id: str):
+def get_category(connection, category_id):
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(SELECT_CATEGORY, (category_id,))
             return cursor.fetchall()
 
 
-def get_entry(connection, entry_id: str):
+def get_entry(connection, entry_id):
+    entry_id_as_string = str(entry_id)
     with connection:
         with connection.cursor() as cursor:
-            cursor.execute(SELECT_ENTRY, (entry_id,))
+            cursor.execute(SELECT_ENTRY, (entry_id_as_string,))
             return cursor.fetchall()
 
 
@@ -90,42 +91,43 @@ def get_titles(connection):
             return cursor.fetchall()
 
 
-def get_category_titles(connection, category_id: str):
+def get_category_titles(connection, category_id):
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(SELECT_CATEGORY_TITLES, (category_id,))
             return cursor.fetchall()
 
 
-def get_category_entries(connection, category_id: str):
+def get_category_entries(connection, category_id):
+    category_id_as_string = str(category_id)
     with connection:
         with connection.cursor() as cursor:
-            cursor.execute(SELECT_CATEGORY_ENTRIES, (category_id,))
+            cursor.execute(SELECT_CATEGORY_ENTRIES, (category_id_as_string,))
             return cursor.fetchall()
 
 
-def get_entries_of_date(connection, entry_date: str) -> List[Entry]:
+def get_entries_of_date(connection, entry_date) -> List[Entry]:
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(SELECT_ENTRIES_OF_DATE, (entry_date,))
             return cursor.fetchall()
 
 
-def get_titles_of_date(connection, entry_date: str) -> List[Entry]:
+def get_titles_of_date(connection, entry_date) -> List[Entry]:
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(SELECT_ENTRY_TITLES_OF_DATE, (entry_date,))
             return cursor.fetchall()
 
 
-def get_a_categorys_titles_of_date(connection, category_id: str, entry_date: str) -> List[Entry]:
+def get_a_categorys_titles_of_date(connection, category_id, entry_date) -> List[Entry]:
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(SELECT_A_CATEGORYS_TITLES_OF_DATE, (entry_date, category_id))
             return cursor.fetchall()
 
 
-def get_a_categorys_entries_of_date(connection, category_id: str, entry_date: str) -> List[Entry]:
+def get_a_categorys_entries_of_date(connection, category_id, entry_date) -> List[Entry]:
     with connection:
         with connection.cursor() as cursor:
             cursor.execute(SELECT_A_CATEGORYS_ENTRIES_OF_DATE, (entry_date, category_id))

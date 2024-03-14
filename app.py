@@ -11,22 +11,19 @@ from tkinter.scrolledtext import ScrolledText
 import tkinter.font as font
 
 import matplotlib.pyplot as plt
-from matplotlib.backend_bases import key_press_handler
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,
-                                               NavigationToolbar2Tk)
 
-from scrollable_window import ViewTitlesDisplayWindow, \
-    ViewEntriesDisplayWindow, ViewACategorysTitlesDisplayWindow, ViewCategoryEntriesDisplayWindow, \
-    ViewTitlesOfADateDisplayWindow, ViewEntriesOfADateDisplayWindow, ViewACategorysTitlesOfADateDisplayWindow, \
-    ViewACategorysEntriesOfADateDisplayWindow, ViewCategoryEntriesAsPercentageDisplayWindow, \
-    ScrollingColorKeyDisplayWindow
+from scrollable_window import ViewTitlesDisplayWindow, ViewEntriesDisplayWindow, ViewACategorysTitlesDisplayWindow, \
+    ViewCategoryEntriesDisplayWindow, ViewTitlesOfADateDisplayWindow, ViewEntriesOfADateDisplayWindow, \
+    ViewACategorysTitlesOfADateDisplayWindow, ViewACategorysEntriesOfADateDisplayWindow, \
+    ViewCategoryEntriesAsPercentageDisplayWindow, ScrollingColorKeyDisplayWindow
 
 entry = ()
 entries_preview = ()
 entries_full_text = ()
 categories = ()
 titles = ()
-category_entries = ()
+category_titles = ()
+category_entries_preview = ()
 category_entries_full_text = ()
 titles_of_date = ()
 entries_of_date_preview = ()
@@ -36,13 +33,11 @@ category_entries_of_date_preview = ()
 category_entries_of_date_full_text = ()
 category_entries_as_percentage = []  # 0: category_number, 1: category_name, 2: category_entries, 3: percentage
 colors = ["red", "green", "blue", "yellow", "orange", "purple", "pink", "brown", "cyan", "magenta", "maroon",
-          "chartreuse3", "turquoise1", "gold3", "coral1", "magenta2", "purple3"]
+          "green2", "turquoise", "sky blue", "gold", "coral", "magenta", "gray", "PeachPuff4"]  # 19 colors
 
 load_dotenv()
 DATABASE_URI = os.environ.get("DATABASE_URI")
 connection = psycopg2.connect(DATABASE_URI)
-
-# DATABASE_PROMPT = "Enter the DATABASE_URI value or leave empty to load from .env file: "
 
 
 class JournalRecorder(tk.Tk):
@@ -61,10 +56,10 @@ class JournalRecorder(tk.Tk):
         container.grid(padx=60, pady=30, sticky="EW")
 
         for FrameClass in (MainMenu, AddEntry, AddCategory, ViewEntry, ViewCategories, ViewTitles, ViewEntriesPreview,
-                           ViewEntriesFullText, ViewCategoryTitles, ViewCategoryEntriesPreview, ViewCategoryEntriesFullText,
-                           ViewTitlesOfDate, ViewEntriesOfDatePreview, ViewEntriesOfDateFullText, ViewCategoryTitlesOfDate,
-                           ViewCategoryEntriesOfDatePreview, ViewCategoryEntriesOfDateFullText,
-                           ViewCategoryEntriesAsPercentage, ViewPieChart):
+                           ViewEntriesFullText, ViewCategoryTitles, ViewCategoryEntriesPreview,
+                           ViewCategoryEntriesFullText, ViewTitlesOfDate, ViewEntriesOfDatePreview,
+                           ViewEntriesOfDateFullText, ViewCategoryTitlesOfDate, ViewCategoryEntriesOfDatePreview,
+                           ViewCategoryEntriesOfDateFullText, ViewCategoryEntriesAsPercentage, ViewPieChart):
             frame = FrameClass(container, self)
             self.frames[FrameClass] = frame
             frame.grid(row=0, column=0, sticky="NSEW")
@@ -83,80 +78,80 @@ class MainMenu(ttk.Frame):
         add_entry_button = ttk.Button(
             self,
             text="Add New Entry",
-            command=lambda: controller.show_frame(AddEntry)  # switches to AddEntry class frame
-        )
+            command=lambda: controller.show_frame(AddEntry)
+        )  # switches to AddEntry class frame
 
         add_category_button = ttk.Button(
             self,
             text="Add New Category",
-            command=lambda: controller.show_frame(AddCategory)  # switches to AddCategory class frame
-        )
+            command=lambda: controller.show_frame(AddCategory)
+        )  # switches to AddCategory class frame
 
         view_entry_button = ttk.Button(
             self,
             text="View Entry by ID",
-            command=lambda: controller.show_frame(ViewEntry)  # switches to ViewEntry class frame
-        )
+            command=lambda: controller.show_frame(ViewEntry)
+        )  # switches to ViewEntry class frame
 
         view_categories_button = ttk.Button(
             self,
             text="View All Categories",
-            command=lambda: controller.show_frame(ViewCategories)  # switches to ViewCategories class frame
-        )
+            command=lambda: controller.show_frame(ViewCategories)
+        )  # switches to ViewCategories class frame
 
         view_titles_button = ttk.Button(
             self,
             text="View All Titles",
-            command=lambda: controller.show_frame(ViewTitles)  # switches to ViewTitles class frame
-        )
+            command=lambda: controller.show_frame(ViewTitles)
+        )  # switches to ViewTitles class frame
 
         view_entries_button = ttk.Button(
             self,
             text="View All Entries",
-            command=lambda: controller.show_frame(ViewEntriesPreview)  # switches to ViewEntries class frame
-        )
+            command=lambda: controller.show_frame(ViewEntriesPreview)
+        )  # switches to ViewEntries class frame
 
         view_category_titles_button = ttk.Button(
             self,
             text="View a Category's Titles",
-            command=lambda: controller.show_frame(ViewCategoryTitles)  # switches to ViewCategoryTitles class frame
-        )
+            command=lambda: controller.show_frame(ViewCategoryTitles)
+        )  # switches to ViewCategoryTitles class frame
 
         view_category_entries_button = ttk.Button(
             self,
             text="View a Category's Entries",
-            command=lambda: controller.show_frame(ViewCategoryEntriesPreview)  # switches to ViewCategoryEntriesPreview class frame
-        )
+            command=lambda: controller.show_frame(ViewCategoryEntriesPreview)
+        )  # switches to ViewCategoryEntriesPreview class frame
 
         view_titles_of_date_button = ttk.Button(
             self,
             text="View All Titles of a Certain Date",
-            command=lambda: controller.show_frame(ViewTitlesOfDate)  # switches to ViewTitlesOfDate class frame
-        )
+            command=lambda: controller.show_frame(ViewTitlesOfDate)
+        )  # switches to ViewTitlesOfDate class frame
 
         view_entries_of_date_button = ttk.Button(
             self,
             text="View All Entries of a Certain Date",
-            command=lambda: controller.show_frame(ViewEntriesOfDatePreview)  # switches to ViewEntriesOfDate class frame
-        )
+            command=lambda: controller.show_frame(ViewEntriesOfDatePreview)
+        )  # switches to ViewEntriesOfDate class frame
 
         view_category_titles_of_date_button = ttk.Button(
             self,
             text="View a Category's Titles of a Certain Date",
-            command=lambda: controller.show_frame(ViewCategoryTitlesOfDate)  # switches to ViewCategoryTitlesOfDate class frame
-        )
+            command=lambda: controller.show_frame(ViewCategoryTitlesOfDate)
+        )  # switches to ViewCategoryTitlesOfDate class frame
 
         view_category_entries_of_date_button = ttk.Button(
             self,
             text="View a Category's Entries of a Certain Date",
-            command=lambda: controller.show_frame(ViewCategoryEntriesOfDatePreview)  # switches to ViewCategoryEntriesOfDate class frame
-        )
+            command=lambda: controller.show_frame(ViewCategoryEntriesOfDatePreview)
+        )  # switches to ViewCategoryEntriesOfDate class frame
 
         view_category_entries_as_percentage_button = ttk.Button(
             self,
             text="View Category Entries as a Percentage of the Total",
-            command=lambda: controller.show_frame(ViewCategoryEntriesAsPercentage)  # switches to ViewCategoryEntriesAsPercentage class frame
-        )
+            command=lambda: controller.show_frame(ViewCategoryEntriesAsPercentage)
+        )  # switches to ViewCategoryEntriesAsPercentage class frame
 
         exit_app_button = ttk.Button(
             self,
@@ -255,7 +250,8 @@ class AddEntry(ttk.Frame):
                     return
                 if entry_id:
                     self.check_double_click_entry_reference = (category_id, entry_title, entry_content)
-                    messagebox.showinfo(title="New Entry Added", message=f"The entry '{entry_title}' has been added with id: {entry_id}")
+                    messagebox.showinfo(title="New Entry Added",
+                                        message=f"The entry '{entry_title}' has been added with id: {entry_id}")
         finally:
             return
 
@@ -282,7 +278,7 @@ class AddEntry(ttk.Frame):
             return 0
 
 
-class AddCategory(ttk.Frame):
+class AddCategory(ttk.Frame):  # Add a category to the database
     global connection
 
     def __init__(self, container, controller, **kwargs):
@@ -290,26 +286,29 @@ class AddCategory(ttk.Frame):
 
         self.category_name = tk.StringVar()
 
-        category_name_label = ttk.Label(self, text="Category Name: ")
-        category_name_entry = ttk.Entry(self, textvariable=self.category_name)
+        self.category_name_label = ttk.Label(self, text="Category Name: ")
+        self.category_name_entry = ttk.Entry(self, textvariable=self.category_name)
 
-        add_category_button = ttk.Button(
+        self.add_category_button = ttk.Button(
             self,
             text="Add Category",
             command=lambda: self.add_category()
         )
 
-        return_to_main_menu = ttk.Button(
+        self.return_to_main_menu = ttk.Button(
             self,
             text="Back to Main Menu",
             command=lambda: controller.show_frame(MainMenu)
         )
 
         self.columnconfigure(2, weight=3)
-        category_name_label.grid(row=0, column=0, sticky="W")
-        category_name_entry.grid(row=0, column=1, columnspan=2, sticky="EW")
-        add_category_button.grid(row=1, column=0, sticky="EW")
-        return_to_main_menu.grid(row=1, column=1, sticky="EW")
+        self.category_name_label.grid(row=0, column=0, sticky="W")
+        self.category_name_entry.grid(row=0, column=1, columnspan=5, sticky="EW")
+        self.add_category_button.grid(row=1, column=1, columnspan=2, sticky="EW")
+        self.return_to_main_menu.grid(row=1, column=4, sticky="EW")
+        self.columnconfigure(2, weight=1)
+        self.columnconfigure(3, weight=1)
+        self.columnconfigure(4, weight=1)
 
         for child in self.winfo_children():
             child.grid_configure(padx=5, pady=5)
@@ -317,14 +316,30 @@ class AddCategory(ttk.Frame):
     def add_category(self):
         cat_name = self.category_name.get()
         already_exists = self.check_category_exists(cat_name)
+        no_name_entered = self.check_category_name_entered(cat_name)
+
+        if no_name_entered == 1:
+            return
+
         if already_exists == 0:
+
             try:
                 new_category_id = database.add_category(connection, cat_name)
             except psycopg2.errors.InvalidTextRepresentation:
                 tk.messagebox.showerror(title="Invalid Input",
                                         message="Make sure you enter valid info into all fields.")
                 return
-            messagebox.showinfo(title="New Category Added", message=f"The category '{cat_name}' has been added with id: {new_category_id}")
+
+            messagebox.showinfo(title="New Category Added",
+                                message=f"The category '{cat_name}' has been added with id: {new_category_id}")
+
+    def check_category_name_entered(self, cat_name):
+        # Checks if the category name is empty or not.
+        if cat_name == "" or cat_name == " " or cat_name == "  " or cat_name == "   ":
+            tk.messagebox.showerror(title="Invalid Input",
+                                    message="You must enter a category name.")
+            return 1
+        return 0
 
     def check_category_exists(self, cat_name):
         # Checks if the exact category name is already in the database
@@ -339,7 +354,7 @@ class AddCategory(ttk.Frame):
         return 0
 
 
-class ViewEntry(ttk.Frame):
+class ViewEntry(ttk.Frame):  # View a single entry by its ID
 
     def __init__(self, container, controller, **kwargs):
         super().__init__(container, **kwargs)
@@ -358,6 +373,12 @@ class ViewEntry(ttk.Frame):
             command=lambda: self.view_entry()
         )
 
+        self.delete_content_button = ttk.Button(
+            self,
+            text="Clear Display Window",
+            command=lambda: self.delete_content()
+        )
+
         self.return_to_main_menu = ttk.Button(
             self,
             text="Back to Main Menu",
@@ -366,8 +387,9 @@ class ViewEntry(ttk.Frame):
 
         self.entry_id_label.grid(row=0, column=0, sticky="E")
         self.entry_id_entry.grid(row=0, column=1, sticky="EW")
-        self.view_entry_button.grid(row=1, column=0, sticky="EW")
-        self.return_to_main_menu.grid(row=1, column=1, sticky="EW")
+        self.view_entry_button.grid(row=1, column=1, sticky="EW")
+        self.delete_content_button.grid(row=1, column=3, sticky="EW")
+        self.return_to_main_menu.grid(row=1, column=5, sticky="EW")
         self.entry_window.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
@@ -417,7 +439,7 @@ class ViewEntry(ttk.Frame):
                 self.entry_window.insert(tk.END, formatted_payload)
                 return formatted_payload
 
-    def check_categories_exist(self):                                                               # TEST IF THIS WORKS!!
+    def check_categories_exist(self):
         # prevents the creation of an entry before the creation of a category
         categories_exist = database.get_categories(connection)
         if not categories_exist:
@@ -433,6 +455,12 @@ class ViewEntry(ttk.Frame):
         entry_display = f"Entry ID: {db_entry[0][1]} | Title: {db_entry[0][2]}\n{db_entry[0][3]}\nDate: {db_entry[0][4]}" \
                         f" | Time: {db_entry[0][5]} | Category ID: {db_entry[0][6]}\n\n\n"
         return entry_display
+
+    def delete_content(self):
+        self.entry_window.delete(1.0, tk.END)
+        self.entry_window = tk.Text(self, wrap=tk.WORD, font=("Segoe UI", 10))
+        self.entry_window.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
+        return
 
 
 class ViewCategories(ttk.Frame):
@@ -456,12 +484,12 @@ class ViewCategories(ttk.Frame):
 
         view_categories_button.grid(row=0, column=0, sticky="EW")
         return_to_main_menu.grid(row=0, column=1, sticky="EW")
+        self.categories_window.grid(row=1, column=0, columnspan=5, rowspan=2, sticky="NSEW")
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
         self.columnconfigure(4, weight=1)
         self.rowconfigure(1, weight=3)
         self.rowconfigure(2, weight=3)
-        self.categories_window.grid(row=1, column=0, columnspan=5, rowspan=2, sticky="NSEW")
 
         for child in self.winfo_children():
             child.grid_configure(padx=5, pady=5)
@@ -480,6 +508,9 @@ class ViewCategories(ttk.Frame):
                 return no_duplication        # the categories are not duplicated in the display window.
             else:
                 categories = db_categories
+                self.categories_window.delete(1.0, tk.END)
+                self.categories_window = tk.Text(self, wrap=tk.WORD, font=("Segoe UI", 10))
+                self.categories_window.grid(row=1, column=0, columnspan=5, rowspan=2, sticky="NSEW")
                 for category in categories:
                     formatted_categories = self.format_categories(category)
                     self.categories_window.insert(tk.END, formatted_categories)
@@ -536,6 +567,10 @@ class ViewTitles(ttk.Frame):
                 return no_duplication  # the titles are not duplicated in the display window.
             else:
                 titles = db_titles
+                self.TitlesWindow.delete(1, tk.END)
+                self.TitlesWindow.scrollbar.grid_forget()
+                self.TitlesWindow = ViewTitlesDisplayWindow(self)
+                self.TitlesWindow.grid(row=1, column=0, columnspan=5, rowspan=2, sticky="NSEW")
                 for title in titles:
                     cat_name = self.match_category_id_to_category_name(title[2], db_category_names)
                     formatted_titles = self.format_titles(title, cat_name)
@@ -606,6 +641,10 @@ class ViewEntriesPreview(ttk.Frame):
                 return no_duplication  # the entries are not duplicated in the display window.
             else:
                 entries_preview = db_entries
+                self.EntriesPreviewWindow.delete(1, tk.END)
+                self.EntriesPreviewWindow.scrollbar.grid_forget()
+                self.EntriesPreviewWindow = ViewEntriesDisplayWindow(self)  # scrollable window
+                self.EntriesPreviewWindow.grid(row=1, column=0, columnspan=6, rowspan=2, sticky="NSEW")
                 for e in entries_preview:
                     cat_name = self.match_category_id_to_category_name(e[6], db_category_names)
                     formatted_entries = self.format_entries(e, cat_name)
@@ -653,9 +692,10 @@ class ViewEntriesFullText(ttk.Frame):
         )
 
         self.view_entries_full_text_button.grid(row=0, column=0, sticky="EW")
-        self.return_to_view_entries.grid(row=0, column=3, sticky="EW")
+        self.return_to_view_entries.grid(row=0, column=2, sticky="EW")
         self.return_to_main_menu.grid(row=0, column=4, sticky="EW")
         self.entries_full_text_window.grid(row=1, column=0, columnspan=5, rowspan=2, sticky="NSEW")
+        self.columnconfigure(1, weight=1)
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
         self.columnconfigure(4, weight=1)
@@ -677,6 +717,9 @@ class ViewEntriesFullText(ttk.Frame):
                 return no_duplication  # the entries are not duplicated in the display window.
             else:
                 entries_full_text = db_entries
+                self.entries_full_text_window.destroy()
+                self.entries_full_text_window = tk.Text(self, wrap=tk.WORD, font=("Segoe UI", 10))
+                self.entries_full_text_window.grid(row=1, column=0, columnspan=5, rowspan=2, sticky="NSEW")
                 for e in entries_full_text:
                     cat_name = self.match_category_id_to_category_name(e[6], db_category_names)
                     formatted_entries = self.format_entries(e, cat_name)
@@ -707,38 +750,45 @@ class ViewCategoryTitles(ttk.Frame):
 
         self.CategoryTitlesWindow = ViewACategorysTitlesDisplayWindow(self)  # scrollable window
 
-        category_id_label = ttk.Label(self, text="Category ID: ")
-        category_id_entry = ttk.Entry(self, textvariable=self.category_id_input_value)
+        self.category_id_label = ttk.Label(self, text="Category ID: ")
+        self.category_id_entry = ttk.Entry(self, textvariable=self.category_id_input_value)
 
-        view_category_titles_button = ttk.Button(
+        self.view_category_titles_button = ttk.Button(
             self,
             text="View a Category's Titles",
             command=lambda: self.view_category_titles()
         )
 
-        return_to_main_menu = ttk.Button(
+        self.clear_display_window_button = ttk.Button(
+            self,
+            text="Clear Display Window",
+            command=lambda: self.delete_content()
+        )
+
+        self.return_to_main_menu = ttk.Button(
             self,
             text="Back to Main Menu",
             command=lambda: controller.show_frame(MainMenu)
         )
 
-        category_id_label.grid(row=0, column=0, sticky="E")
-        category_id_entry.grid(row=0, column=1, sticky="EW")
-        view_category_titles_button.grid(row=1, column=0, sticky="EW")
-        return_to_main_menu.grid(row=1, column=1, sticky="EW")
+        self.category_id_label.grid(row=0, column=0, sticky="E")
+        self.category_id_entry.grid(row=0, column=1, sticky="EW")
+        self.clear_display_window_button.grid(row=1, column=3, sticky="EW")
+        self.view_category_titles_button.grid(row=1, column=1, sticky="EW")
+        self.return_to_main_menu.grid(row=1, column=5, sticky="EW")
+        self.CategoryTitlesWindow.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
         self.columnconfigure(4, weight=1)
         self.columnconfigure(5, weight=1)
         self.rowconfigure(2, weight=3)
         self.rowconfigure(3, weight=3)
-        self.CategoryTitlesWindow.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
 
         for child in self.winfo_children():
             child.grid_configure(padx=5, pady=5)
 
     def view_category_titles(self):
-        global titles  # used to check for double-clicks
+        global category_titles  # used to check for double-clicks
         no_duplication = ()
         user_input = self.category_id_input_value.get()
 
@@ -756,15 +806,15 @@ class ViewCategoryTitles(ttk.Frame):
                                     message="No titles have been created yet.")
             return
         else:
-            if db_titles == titles:    # if button is double-clicked,
+            if db_titles == category_titles:    # if button is double-clicked,
                 return no_duplication  # the titles are not duplicated in the display window.
             else:
                 category_name = db_category_name[0][2]
                 header = f"Titles of Category {user_input}: {category_name}"
                 footer = " "
                 self.CategoryTitlesWindow.update_entry_widgets(header)
-                titles = db_titles
-                for title in titles:
+                cat_titles = db_titles
+                for title in cat_titles:
                     formatted_titles = self.format_titles(title, user_input)
                     self.CategoryTitlesWindow.update_entry_widgets(formatted_titles)
                 self.CategoryTitlesWindow.update_entry_widgets(footer)
@@ -774,14 +824,22 @@ class ViewCategoryTitles(ttk.Frame):
         title_display = f"Category {user_input} | ID: {db_titles[0]} | Title: {db_titles[1]}"
         return title_display
 
+    def delete_content(self):
+        self.CategoryTitlesWindow.delete(1, tk.END)
+        self.CategoryTitlesWindow.scrollbar.grid_forget()
+        self.CategoryTitlesWindow = ViewACategorysTitlesDisplayWindow(self)
+        self.CategoryTitlesWindow.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
+        return
+
 
 class ViewCategoryEntriesPreview(ttk.Frame):
     def __init__(self, container, controller, **kwargs):
         super().__init__(container, **kwargs)
 
         self.category_id_input_value = tk.StringVar()
+        self.content_deleted = False
 
-        self.CategoryEntriesPreviewWindow = ViewCategoryEntriesDisplayWindow(self)  # scrollable window
+        self.ViewCategoryEntriesPreviewWindow = ViewCategoryEntriesDisplayWindow(self)  # scrollable window
 
         self.category_id_label = ttk.Label(self, text="Category ID: ")
         self.category_id_entry = ttk.Entry(self, textvariable=self.category_id_input_value)
@@ -798,6 +856,12 @@ class ViewCategoryEntriesPreview(ttk.Frame):
             command=lambda: controller.show_frame(ViewCategoryEntriesFullText)
         )
 
+        self.delete_entry_content_button = ttk.Button(
+            self,
+            text="Delete Entry Content",
+            command=lambda: self.delete_content()
+        )
+
         self.return_to_main_menu = ttk.Button(
             self,
             text="Back to Main Menu",
@@ -806,10 +870,11 @@ class ViewCategoryEntriesPreview(ttk.Frame):
 
         self.category_id_label.grid(row=0, column=0, sticky="E")
         self.category_id_entry.grid(row=0, column=1, sticky="EW")
+        self.delete_entry_content_button.grid(row=0, column=3, sticky="EW")
         self.view_category_entries_preview_button.grid(row=1, column=1, sticky="EW")
-        self.view_category_entries_full_text_button.grid(row=1, column=2, sticky="EW")
-        self.return_to_main_menu.grid(row=1, column=3, sticky="EW")
-        self.CategoryEntriesPreviewWindow.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
+        self.view_category_entries_full_text_button.grid(row=1, column=3, sticky="EW")
+        self.return_to_main_menu.grid(row=1, column=5, sticky="EW")
+        self.ViewCategoryEntriesPreviewWindow.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
         self.columnconfigure(4, weight=1)
@@ -821,7 +886,7 @@ class ViewCategoryEntriesPreview(ttk.Frame):
             child.grid_configure(padx=5, pady=5)
 
     def view_category_entries_preview(self):
-        global category_entries  # used to check for double-clicks
+        global category_entries_preview  # used to check for double-clicks
         no_duplication = ()
         user_input = self.category_id_input_value.get()
         category_id_as_integer = self.convert_category_id_to_integer(user_input)
@@ -840,18 +905,21 @@ class ViewCategoryEntriesPreview(ttk.Frame):
                                     message="This category doesn't exist, or contains no entries.")
             return
         else:
-            if payload == category_entries:  # if button is double-clicked,
-                return no_duplication        # the entries are not duplicated in the display window.
+            if payload == category_entries_preview:  # if button is double-clicked,
+                return no_duplication                # the entries are not duplicated in the display window.
             else:
+                category_entries_preview = payload
                 category_name = db_category_name[0][2]
                 header = f"Entries of Category {user_input}: {category_name}"
-                footer = " "
+                footer = "\n______________________________________________________________________________________" \
+                         "________________________________________________________________________________________" \
+                         "________________________________\n\n"
                 category_entries = payload
-                self.CategoryEntriesPreviewWindow.update_entry_widgets(header)
+                self.ViewCategoryEntriesPreviewWindow.update_entry_widgets(header)
                 for e in category_entries:
                     formatted_entries = self.format_entries(e, user_input)
-                    self.CategoryEntriesPreviewWindow.update_entry_widgets(formatted_entries)
-                self.CategoryEntriesPreviewWindow.update_entry_widgets(footer)
+                    self.ViewCategoryEntriesPreviewWindow.update_entry_widgets(formatted_entries)
+                self.ViewCategoryEntriesPreviewWindow.update_entry_widgets(footer)
                 return category_entries
 
     def format_entries(self, db_entry, user_input):
@@ -873,6 +941,15 @@ class ViewCategoryEntriesPreview(ttk.Frame):
             category_id_as_integer = 0
         return category_id_as_integer
 
+    def delete_content(self):
+        global category_entries_preview
+        self.ViewCategoryEntriesPreviewWindow.delete(1, tk.END)
+        self.ViewCategoryEntriesPreviewWindow.scrollbar.grid_forget()
+        category_entries_preview = ()
+        self.ViewCategoryEntriesPreviewWindow = ViewCategoryEntriesDisplayWindow(self)  # scrollable window
+        self.ViewCategoryEntriesPreviewWindow.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
+        return category_entries_preview
+
 
 class ViewCategoryEntriesFullText(ttk.Frame):
     def __init__(self, container, controller, **kwargs):
@@ -883,7 +960,7 @@ class ViewCategoryEntriesFullText(ttk.Frame):
         self.category_id_label = ttk.Label(self, text="Category ID: ")
         self.category_id_entry = ttk.Entry(self, textvariable=self.category_id_input_value)
 
-        self.entries_full_text_window = tk.Text(self, wrap=tk.WORD, font=("Segoe UI", 10))
+        self.view_category_entries_full_text_window = tk.Text(self, wrap=tk.WORD, font=("Segoe UI", 10))
 
         self.view_category_entries_full_text_button = ttk.Button(
             self,
@@ -897,6 +974,12 @@ class ViewCategoryEntriesFullText(ttk.Frame):
             command=lambda: controller.show_frame(ViewCategoryEntriesPreview)
         )
 
+        self.delete_entry_content_button = ttk.Button(
+            self,
+            text="Delete Entry Content",
+            command=lambda: self.delete_content()
+        )
+
         self.return_to_main_menu_button = ttk.Button(
             self,
             text="Back to Main Menu",
@@ -905,13 +988,15 @@ class ViewCategoryEntriesFullText(ttk.Frame):
 
         self.category_id_label.grid(row=0, column=0, sticky="E")
         self.category_id_entry.grid(row=0, column=1, sticky="EW")
+        self.delete_entry_content_button.grid(row=0, column=3, sticky="EW")
         self.view_category_entries_full_text_button.grid(row=1, column=1, sticky="EW")
         self.return_to_view_category_entries_preview.grid(row=1, column=3, sticky="EW")
-        self.return_to_main_menu_button.grid(row=1, column=4, sticky="EW")
-        self.entries_full_text_window.grid(row=2, column=0, columnspan=5, rowspan=2, sticky="NSEW")
+        self.return_to_main_menu_button.grid(row=1, column=5, sticky="EW")
+        self.view_category_entries_full_text_window.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
         self.columnconfigure(4, weight=1)
+        self.columnconfigure(5, weight=1)
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=1)
         self.rowconfigure(2, weight=3)
@@ -938,13 +1023,15 @@ class ViewCategoryEntriesFullText(ttk.Frame):
 
                 category_name = db_category_name[0][2]
                 header = f"Entries of Category {user_input}: {category_name}\n\n"
-                footer = " \n"
-                self.entries_full_text_window.insert(tk.END, header)
+                footer = "________________________________________________________________________________________" \
+                         "________________________________________________________________________________________" \
+                         "______________________________\n\n\n"
+                self.view_category_entries_full_text_window.insert(tk.END, header)
                 for e in category_entries_full_text:
                     formatted_entries = self.format_entries(e, category_name)
-                    self.entries_full_text_window.insert(tk.END, formatted_entries)
-                self.entries_full_text_window.insert(tk.END, footer)
-                return entries_full_text
+                    self.view_category_entries_full_text_window.insert(tk.END, formatted_entries)
+                self.view_category_entries_full_text_window.insert(tk.END, footer)
+                return category_entries_full_text
 
     def format_entries(self, db_entries, category_name):
         entry_display = f"Entry ID: {db_entries[1]} | " \
@@ -960,6 +1047,12 @@ class ViewCategoryEntriesFullText(ttk.Frame):
         # (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type integer: ""
         int_cat_id = int(cat_id)
         return int_cat_id
+
+    def delete_content(self):
+        global category_entries_full_text
+        self.view_category_entries_full_text_window.delete(1.0, tk.END)
+        category_entries_full_text = ()
+        return category_entries_full_text
 
 
 class ViewTitlesOfDate(ttk.Frame):
@@ -979,6 +1072,12 @@ class ViewTitlesOfDate(ttk.Frame):
             command=lambda: self.view_titles_of_date()
         )
 
+        self.clear_display_window_button = ttk.Button(
+            self,
+            text="Clear Display Window",
+            command=lambda: self.delete_content()
+        )
+
         self.return_to_main_menu = ttk.Button(
             self,
             text="Back to Main Menu",
@@ -987,8 +1086,10 @@ class ViewTitlesOfDate(ttk.Frame):
 
         self.entry_date_label.grid(row=0, column=0, sticky="W")
         self.entry_date_entry.grid(row=0, column=1, sticky="EW")
-        self.view_titles_of_date_button.grid(row=1, column=0, sticky="EW")
-        self.return_to_main_menu.grid(row=1, column=1, sticky="EW")
+        self.clear_display_window_button.grid(row=1, column=3, sticky="EW")
+        self.view_titles_of_date_button.grid(row=1, column=1, sticky="EW")
+        self.return_to_main_menu.grid(row=1, column=5, sticky="EW")
+        self.ViewTitlesOfDateWindow.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
         self.columnconfigure(4, weight=1)
@@ -1042,6 +1143,15 @@ class ViewTitlesOfDate(ttk.Frame):
             if category_id == category[1]:
                 return category[2]
 
+    def delete_content(self):
+        global titles_of_date
+        self.ViewTitlesOfDateWindow.delete(1, tk.END)
+        self.ViewTitlesOfDateWindow.scrollbar.grid_forget()
+        titles_of_date = ()
+        self.ViewTitlesOfDateWindow = ViewTitlesOfADateDisplayWindow(self)
+        self.ViewTitlesOfDateWindow.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
+        return titles_of_date
+
 
 class ViewEntriesOfDatePreview(ttk.Frame):
     def __init__(self, container, controller, **kwargs):
@@ -1066,6 +1176,12 @@ class ViewEntriesOfDatePreview(ttk.Frame):
             command=lambda: controller.show_frame(ViewEntriesOfDateFullText)
         )
 
+        self.delete_content_button = ttk.Button(
+            self,
+            text="Clear Entry Content Window",
+            command=lambda: self.delete_content()
+        )
+
         self.return_to_main_menu = ttk.Button(
             self,
             text="Back to Main Menu",
@@ -1074,6 +1190,7 @@ class ViewEntriesOfDatePreview(ttk.Frame):
 
         self.entry_date_label.grid(row=0, column=0, sticky="W")
         self.entry_date_entry.grid(row=0, column=1, sticky="EW")
+        self.delete_content_button.grid(row=0, column=2, sticky="EW")
         self.view_entries_of_date_preview_button.grid(row=1, column=1, sticky="EW")
         self.view_entries_of_date_full_text_button.grid(row=1, column=2, sticky="EW")
         self.return_to_main_menu.grid(row=1, column=5, sticky="EW")
@@ -1085,12 +1202,11 @@ class ViewEntriesOfDatePreview(ttk.Frame):
         self.rowconfigure(2, weight=3)
         self.rowconfigure(3, weight=3)
 
-
         for child in self.winfo_children():
             child.grid_configure(padx=5, pady=5)
 
     def view_entries_of_date_preview(self):
-        global entries_of_date_preview # used to check for double-clicks
+        global entries_of_date_preview  # used to check for double-clicks
         no_duplication = ()
         user_input_date = self.entry_date_input_value.get()
         db_category_names = database.get_categories(connection)
@@ -1111,6 +1227,9 @@ class ViewEntriesOfDatePreview(ttk.Frame):
                 return no_duplication               # the entries are not duplicated in the display window.
             else:
                 entries_of_date = payload
+                self.ViewEntriesOfDatePreviewWindow.scrollbar.grid_forget()
+                self.ViewEntriesOfDatePreviewWindow = ViewEntriesOfADateDisplayWindow(self)  # scrollable window
+                self.ViewEntriesOfDatePreviewWindow.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
                 header = f"Entries of {user_input_date}:"
                 footer = f" "
                 self.ViewEntriesOfDatePreviewWindow.update_entry_widgets(header)
@@ -1134,6 +1253,14 @@ class ViewEntriesOfDatePreview(ttk.Frame):
             if category_id == category[1]:
                 return category[2]
 
+    def delete_content(self):
+        global entries_of_date_preview
+        self.ViewEntriesOfDatePreviewWindow.delete(1, tk.END)
+        entries_of_date_preview = ()
+        self.ViewEntriesOfDatePreviewWindow = ViewEntriesOfADateDisplayWindow(self)
+        self.ViewEntriesOfDatePreviewWindow.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
+        return entries_of_date_preview
+
 
 class ViewEntriesOfDateFullText(ttk.Frame):
     def __init__(self, container, controller, **kwargs):
@@ -1144,12 +1271,18 @@ class ViewEntriesOfDateFullText(ttk.Frame):
         self.entry_date_label = ttk.Label(self, text="Entry Date (YYYY-MM-DD): ")
         self.entry_date_entry = ttk.Entry(self, textvariable=self.entry_date_input_value)
 
-        self.entries_full_text_window = tk.Text(self, wrap=tk.WORD, font=("Segoe UI", 10))
+        self.view_entries_of_date_full_text_window = tk.Text(self, wrap=tk.WORD, font=("Segoe UI", 10))
 
         self.view_entries_of_date_full_text_button = ttk.Button(
             self,
-            text="View All Entries of a Certain Date",
+            text="View All Entries of a Certain Date - Full Text",
             command=lambda: self.view_entries_of_date_full_text()
+        )
+
+        self.delete_content_button = ttk.Button(
+            self,
+            text="Clear Entry Content Window",
+            command=lambda: self.delete_content()
         )
 
         self.return_to_main_menu = ttk.Button(
@@ -1166,10 +1299,11 @@ class ViewEntriesOfDateFullText(ttk.Frame):
 
         self.entry_date_label.grid(row=0, column=0, sticky="W")
         self.entry_date_entry.grid(row=0, column=1, sticky="EW")
+        self.delete_content_button.grid(row=0, column=3, sticky="EW")
         self.view_entries_of_date_full_text_button.grid(row=1, column=1, sticky="EW")
         self.return_to_entries_of_date_preview.grid(row=1, column=3, sticky="EW")
         self.return_to_main_menu.grid(row=1, column=5, sticky="EW")
-        self.entries_full_text_window.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
+        self.view_entries_of_date_full_text_window.grid(row=2, column=0, columnspan=6, rowspan=2, sticky="NSEW")
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
         self.columnconfigure(4, weight=1)
@@ -1203,15 +1337,15 @@ class ViewEntriesOfDateFullText(ttk.Frame):
                 entries_of_date_full_text = payload
                 header = f"Entries of {user_input_date}:\n\n"
                 footer = f"\n"
-                self.entries_full_text_window.insert(tk.END, header)
+                self.view_entries_of_date_full_text_window.insert(tk.END, header)
                 cat_name_lookup = self.match_category_id_to_category_name(db_category_names)
                 for e in entries_of_date_full_text:
                     for key, value in cat_name_lookup.items():
                         if e[6] == key:
                             cat_name = value
-                        formatted_payload = self.format_entries_of_date_full_text(e, cat_name)
-                    self.entries_full_text_window.insert(tk.END, formatted_payload)
-                self.entries_full_text_window.insert(tk.END, footer)
+                    formatted_payload = self.format_entries_of_date_full_text(e, cat_name)
+                    self.view_entries_of_date_full_text_window.insert(tk.END, formatted_payload)
+                self.view_entries_of_date_full_text_window.insert(tk.END, footer)
                 return entries_of_date_full_text
 
     def format_entries_of_date_full_text(self, db_entries, category_name):
@@ -1227,6 +1361,12 @@ class ViewEntriesOfDateFullText(ttk.Frame):
         for category in db_category_names:
             id_name_match[category[1]] = category[2]
         return id_name_match
+
+    def delete_content(self):
+        global entries_of_date_full_text
+        self.view_entries_of_date_full_text_window.delete(1.0, tk.END)
+        entries_of_date_full_text = ()
+        return entries_of_date_full_text
 
 
 class ViewCategoryTitlesOfDate(ttk.Frame):
@@ -1250,6 +1390,12 @@ class ViewCategoryTitlesOfDate(ttk.Frame):
             command=lambda: self.view_category_titles_of_date()
         )
 
+        self.clear_display_window_button = ttk.Button(
+            self,
+            text="Clear Display Window",
+            command=lambda: self.delete_content()
+        )
+
         self.return_to_main_menu = ttk.Button(
             self,
             text="Back to Main Menu",
@@ -1258,6 +1404,7 @@ class ViewCategoryTitlesOfDate(ttk.Frame):
 
         self.category_id_label.grid(row=0, column=0, sticky="W")
         self.category_id_entry.grid(row=0, column=1, sticky="EW")
+        self.clear_display_window_button.grid(row=2, column=3, sticky="EW")
         self.entry_date_label.grid(row=1, column=0, sticky="W")
         self.entry_date_entry.grid(row=1, column=1, sticky="EW")
         self.view_category_titles_of_date_button.grid(row=2, column=1, sticky="EW")
@@ -1323,10 +1470,21 @@ class ViewCategoryTitlesOfDate(ttk.Frame):
             cat_id_as_integer = 0
         return cat_id_as_integer
 
+    def delete_content(self):
+        global category_titles_of_date
+        self.ViewCategoryTitlesOfDateWindow.delete(1, tk.END)
+        self.ViewCategoryTitlesOfDateWindow.scrollbar.grid_forget()
+        category_titles_of_date = ()
+        self.ViewCategoryTitlesOfDateWindow = ViewACategorysTitlesOfADateDisplayWindow(self)
+        self.ViewCategoryTitlesOfDateWindow.grid(row=3, column=0, columnspan=6, rowspan=2, sticky="NSEW")
+        return category_titles_of_date
+
 
 class ViewCategoryEntriesOfDatePreview(ttk.Frame):
     def __init__(self, container, controller, **kwargs):
         super().__init__(container, **kwargs)
+
+        self.no_duplication = ()
 
         self.category_id_input_value = tk.StringVar()
         self.entry_date_input_value = tk.StringVar()
@@ -1339,7 +1497,7 @@ class ViewCategoryEntriesOfDatePreview(ttk.Frame):
         self.entry_date_label = ttk.Label(self, text="Entry Date (YYYY-MM-DD): ")
         self.entry_date_entry = ttk.Entry(self, textvariable=self.entry_date_input_value)
 
-        self.view_category_entries_of_date_button = ttk.Button(
+        self.view_category_entries_of_date_preview_button = ttk.Button(
             self,
             text="View a Category's Entries of a Certain Date - Previews",
             command=lambda: self.view_category_entries_of_date_preview()
@@ -1349,6 +1507,12 @@ class ViewCategoryEntriesOfDatePreview(ttk.Frame):
             self,
             text="View a Category's Entries of a Certain Date - Full Text",
             command=lambda: controller.show_frame(ViewCategoryEntriesOfDateFullText)
+        )
+
+        self.delete_content_button = ttk.Button(
+            self,
+            text="Clear Entry Content Window",
+            command=lambda: self.delete_content()
         )
 
         self.return_to_main_menu = ttk.Button(
@@ -1361,22 +1525,20 @@ class ViewCategoryEntriesOfDatePreview(ttk.Frame):
         self.category_id_entry.grid(row=0, column=1, sticky="EW")
         self.entry_date_label.grid(row=1, column=0, sticky="E")
         self.entry_date_entry.grid(row=1, column=1, sticky="EW")
-        self.view_category_entries_of_date_button.grid(row=2, column=1, sticky="EW")
-        self.view_category_entries_of_date_full_text_button.grid(row=2, column=2, sticky="EW")
-        self.return_to_main_menu.grid(row=2, column=4, sticky="EW")
+        self.delete_content_button.grid(row=0, column=3, rowspan=2, sticky="EW")
+        self.view_category_entries_of_date_preview_button.grid(row=2, column=1, sticky="EW")
+        self.view_category_entries_of_date_full_text_button.grid(row=2, column=3, sticky="EW")
+        self.return_to_main_menu.grid(row=2, column=5, sticky="EW")
         self.ViewCategoryEntriesOfDatePreviewWindow.grid(row=3, column=0, columnspan=6, rowspan=2, sticky="NSEW")
+        self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
         self.columnconfigure(4, weight=1)
         self.columnconfigure(5, weight=1)
         self.rowconfigure(3, weight=3)
         self.rowconfigure(4, weight=3)
 
-        for child in self.winfo_children():
-            child.grid_configure(padx=5, pady=5)
-
     def view_category_entries_of_date_preview(self):
         global category_entries_of_date_preview  # used to check for double-clicks
-        no_duplication = ()
         user_input_date = self.entry_date_input_value.get()
         user_input_category_id = self.category_id_input_value.get()
 
@@ -1395,12 +1557,12 @@ class ViewCategoryEntriesOfDatePreview(ttk.Frame):
             return
         else:
             if payload == category_entries_of_date_preview:  # if button is double-clicked,
-                return no_duplication                # the entries are not duplicated in the display window.
+                return self.no_duplication                   # the entries are not duplicated in the display window.
             else:
                 category_name = db_category_name[0][2]
                 category_entries_of_date_preview = payload
                 header = f"Category {user_input_category_id} ({category_name}) Entries on {user_input_date}:"
-                footer = f" "
+                footer = " "
                 self.ViewCategoryEntriesOfDatePreviewWindow.update_entry_widgets(header)
                 for e in category_entries_of_date_preview:
                     formatted_payload = self.format_category_entries_of_date_preview(e, user_input_category_id)
@@ -1414,6 +1576,15 @@ class ViewCategoryEntriesOfDatePreview(ttk.Frame):
                         f"Title: {db_entries[2]}\n" \
                         f"{db_entries[3]}"
         return entry_display
+
+    def delete_content(self):
+        global category_entries_of_date_preview
+        self.ViewCategoryEntriesOfDatePreviewWindow.delete(1, tk.END)
+        self.ViewCategoryEntriesOfDatePreviewWindow.scrollbar.grid_forget()
+        category_entries_of_date_preview = ()
+        self.ViewCategoryEntriesOfDatePreviewWindow = ViewACategorysEntriesOfADateDisplayWindow(self)
+        self.ViewCategoryEntriesOfDatePreviewWindow.grid(row=3, column=0, columnspan=6, rowspan=2, sticky="NSEW")
+        return category_entries_of_date_preview
 
 
 class ViewCategoryEntriesOfDateFullText(ttk.Frame):
@@ -1443,6 +1614,12 @@ class ViewCategoryEntriesOfDateFullText(ttk.Frame):
             command=lambda: controller.show_frame(ViewCategoryEntriesOfDatePreview)
         )
 
+        self.delete_content_button = ttk.Button(
+            self,
+            text="Clear Entry Content Window",
+            command=lambda: self.delete_content()
+        )
+
         self.return_to_main_menu = ttk.Button(
             self,
             text="Back to Main Menu",
@@ -1451,6 +1628,7 @@ class ViewCategoryEntriesOfDateFullText(ttk.Frame):
 
         self.category_id_label.grid(row=0, column=0, sticky="E")
         self.category_id_entry.grid(row=0, column=1, sticky="EW")
+        self.delete_content_button.grid(row=0, column=3, rowspan=2, sticky="EW")
         self.entry_date_label.grid(row=1, column=0, sticky="E")
         self.entry_date_entry.grid(row=1, column=1, sticky="EW")
         self.view_category_entries_of_date_full_text_button.grid(row=2, column=1, sticky="EW")
@@ -1489,7 +1667,9 @@ class ViewCategoryEntriesOfDateFullText(ttk.Frame):
                 category_name = db_category_name[0][2]
                 category_entries_of_date_full_text = payload
                 header = f"Category {user_input_category_id} ({category_name}) Entries on {user_input_date}:\n\n"
-                footer = f"\n"
+                footer = "\n________________________________________________________________________________________" \
+                         "__________________________________________________________________________________________" \
+                         "____________________________\n\n\n"
                 self.view_category_entries_of_date_display_window.insert(tk.END, header)
                 for e in category_entries_of_date_full_text:
                     formatted_payload = self.format_category_entries_of_date_full_text(e, user_input_category_id)
@@ -1503,6 +1683,12 @@ class ViewCategoryEntriesOfDateFullText(ttk.Frame):
                         f"Title: {db_entries[2]}\n" \
                         f"{db_entries[3]}\n\n"
         return entry_display
+
+    def delete_content(self):
+        global category_entries_of_date_full_text
+        self.view_category_entries_of_date_display_window.delete(1.0, tk.END)
+        category_entries_of_date_full_text = ()
+        return category_entries_of_date_full_text
 
 
 class ViewCategoryEntriesAsPercentage(ttk.Frame):
@@ -1562,9 +1748,10 @@ class ViewCategoryEntriesAsPercentage(ttk.Frame):
                 return
             else:
                 category_entries_as_percentage = payload
-                self.format_category_entries_as_percentage()
-                #self.ViewCategoryEntriesAsPercentageWindow.destroy()
+                self.ViewCategoryEntriesAsPercentageWindow.scrollbar.grid_forget()
                 self.ViewCategoryEntriesAsPercentageWindow = ViewCategoryEntriesAsPercentageDisplayWindow(self)
+                self.ViewCategoryEntriesAsPercentageWindow.grid(row=1, column=0, columnspan=4, sticky="NSEW")
+                self.format_category_entries_as_percentage()
 
     def get_category_names_for_iteration(self):
         db_category_names = database.get_categories(connection)
@@ -1662,7 +1849,7 @@ class ViewPieChart(ttk.Frame):
         self.color_key_canvas = tk.Canvas(self, width=800, height=400)
 
         self.scrolling_color_key = ScrollingColorKeyDisplayWindow(self)  # scrollable window
-        self.cat_string = f""
+        self.cat_string = ""
 
         self.view_pie_chart_button.grid(row=0, column=0, sticky="EW")
         self.return_to_category_entries_as_percentage_button.grid(row=0, column=2, sticky="EW")
@@ -1718,9 +1905,10 @@ class ViewPieChart(ttk.Frame):
 
         for item in category_entries_as_percentage:
             i = category_entries_as_percentage.index(item)
+            rating = i + 1                                  # The first category is 1, not 0.
             cat_name = cat_names_dict[item[0]]
             cat_percentage = round(item[3], 2)
-            self.cat_string = f"{i}: {graph_colors[i]} | Category #{item[0]} {cat_name}: {cat_percentage}%"
+            self.cat_string = f"{rating}: {graph_colors[i]} | Category #{item[0]} {cat_name}: {cat_percentage}%"
             self.scrolling_color_key.update_entry_widgets(self.cat_string)
 
 

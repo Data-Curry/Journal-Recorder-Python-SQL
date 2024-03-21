@@ -30,6 +30,9 @@ SELECT_CATEGORY_ENTRIES_AS_PERCENTAGE = "SELECT category_id, " \
                                         "COUNT(category_id) / SUM(COUNT(category_id)) OVER() * 100.0 AS percentage " \
                                         "FROM entries " \
                                         "GROUP BY category_id;"
+DELETE_ENTRY = "DELETE FROM entries WHERE id = %s;"
+DELETE_ENTRIES_OF_CATEGORY = "DELETE FROM entries WHERE category_id = %s;"
+DELETE_CATEGORY = "DELETE FROM categories WHERE id = %s;"
 
 
 def create_tables(connection):
@@ -139,3 +142,24 @@ def get_categorys_entries_as_percentage_of_all(connection):
         with connection.cursor() as cursor:
             cursor.execute(SELECT_CATEGORY_ENTRIES_AS_PERCENTAGE)
             return cursor.fetchall()
+
+
+def delete_entry(connection, entry_id):
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(DELETE_ENTRY, (entry_id,))
+            return cursor.rowcount
+
+
+def delete_entries_of_category(connection, category_id):
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(DELETE_ENTRIES_OF_CATEGORY, (category_id,))
+            return cursor.rowcount
+
+
+def delete_category(connection, category_id):
+    with connection:
+        with connection.cursor() as cursor:
+            cursor.execute(DELETE_CATEGORY, (category_id,))
+            return cursor.rowcount

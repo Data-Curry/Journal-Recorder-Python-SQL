@@ -59,7 +59,7 @@ class JournalRecorder(tk.Tk):
                            ViewEntriesFullText, ViewCategoryTitles, ViewCategoryEntriesPreview,
                            ViewCategoryEntriesFullText, ViewTitlesOfDate, ViewEntriesOfDatePreview,
                            ViewEntriesOfDateFullText, ViewCategoryTitlesOfDate, ViewCategoryEntriesOfDatePreview,
-                           ViewCategoryEntriesOfDateFullText, ViewCategoryEntriesAsPercentage, ViewPieChart):
+                           ViewCategoryEntriesOfDateFullText, ViewCategoryEntriesAsPercentage, ViewPieChart, DeleteSomething):
             frame = FrameClass(container, self)
             self.frames[FrameClass] = frame
             frame.grid(row=0, column=0, sticky="NSEW")
@@ -75,105 +75,114 @@ class MainMenu(ttk.Frame):
     def __init__(self, container, controller, **kwargs):
         super().__init__(container, **kwargs)
 
-        add_entry_button = ttk.Button(
+        self.add_entry_button = ttk.Button(
             self,
             text="Add New Entry",
             command=lambda: controller.show_frame(AddEntry)
         )  # switches to AddEntry class frame
 
-        add_category_button = ttk.Button(
+        self.add_category_button = ttk.Button(
             self,
             text="Add New Category",
             command=lambda: controller.show_frame(AddCategory)
         )  # switches to AddCategory class frame
 
-        view_entry_button = ttk.Button(
+        self.view_entry_button = ttk.Button(
             self,
             text="View Entry by ID",
             command=lambda: controller.show_frame(ViewEntry)
         )  # switches to ViewEntry class frame
 
-        view_categories_button = ttk.Button(
+        self.view_categories_button = ttk.Button(
             self,
             text="View All Categories",
             command=lambda: controller.show_frame(ViewCategories)
         )  # switches to ViewCategories class frame
 
-        view_titles_button = ttk.Button(
+        self.view_titles_button = ttk.Button(
             self,
             text="View All Titles",
             command=lambda: controller.show_frame(ViewTitles)
         )  # switches to ViewTitles class frame
 
-        view_entries_button = ttk.Button(
+        self.view_entries_button = ttk.Button(
             self,
             text="View All Entries",
             command=lambda: controller.show_frame(ViewEntriesPreview)
         )  # switches to ViewEntries class frame
 
-        view_category_titles_button = ttk.Button(
+        self.view_category_titles_button = ttk.Button(
             self,
             text="View a Category's Titles",
             command=lambda: controller.show_frame(ViewCategoryTitles)
         )  # switches to ViewCategoryTitles class frame
 
-        view_category_entries_button = ttk.Button(
+        self.view_category_entries_button = ttk.Button(
             self,
             text="View a Category's Entries",
             command=lambda: controller.show_frame(ViewCategoryEntriesPreview)
         )  # switches to ViewCategoryEntriesPreview class frame
 
-        view_titles_of_date_button = ttk.Button(
+        self.view_titles_of_date_button = ttk.Button(
             self,
             text="View All Titles of a Certain Date",
             command=lambda: controller.show_frame(ViewTitlesOfDate)
         )  # switches to ViewTitlesOfDate class frame
 
-        view_entries_of_date_button = ttk.Button(
+        self.view_entries_of_date_button = ttk.Button(
             self,
             text="View All Entries of a Certain Date",
             command=lambda: controller.show_frame(ViewEntriesOfDatePreview)
         )  # switches to ViewEntriesOfDate class frame
 
-        view_category_titles_of_date_button = ttk.Button(
+        self.view_category_titles_of_date_button = ttk.Button(
             self,
             text="View a Category's Titles of a Certain Date",
             command=lambda: controller.show_frame(ViewCategoryTitlesOfDate)
         )  # switches to ViewCategoryTitlesOfDate class frame
 
-        view_category_entries_of_date_button = ttk.Button(
+        self.view_category_entries_of_date_button = ttk.Button(
             self,
             text="View a Category's Entries of a Certain Date",
             command=lambda: controller.show_frame(ViewCategoryEntriesOfDatePreview)
         )  # switches to ViewCategoryEntriesOfDate class frame
 
-        view_category_entries_as_percentage_button = ttk.Button(
+        self.view_category_entries_as_percentage_button = ttk.Button(
             self,
             text="View Category Entries as a Percentage of the Total",
             command=lambda: controller.show_frame(ViewCategoryEntriesAsPercentage)
         )  # switches to ViewCategoryEntriesAsPercentage class frame
 
-        exit_app_button = ttk.Button(
+        self.exit_app_button = ttk.Button(
             self,
             text="Exit",
             command=exit
-        )
+        )  # exits the app
 
-        add_entry_button.grid(row=0, column=0, sticky="EW")
-        add_category_button.grid(row=1, column=0, sticky="EW")
-        view_entry_button.grid(row=2, column=0, sticky="EW")
-        view_categories_button.grid(row=3, column=0, sticky="EW")
-        view_titles_button.grid(row=4, column=0, sticky="EW")
-        view_entries_button.grid(row=5, column=0, sticky="EW")
-        view_category_titles_button.grid(row=6, column=0, sticky="EW")
-        view_category_entries_button.grid(row=7, column=0, sticky="EW")
-        view_titles_of_date_button.grid(row=8, column=0, sticky="EW")
-        view_entries_of_date_button.grid(row=9, column=0, sticky="EW")
-        view_category_titles_of_date_button.grid(row=10, column=0, sticky="EW")
-        view_category_entries_of_date_button.grid(row=11, column=0, sticky="EW")
-        view_category_entries_as_percentage_button.grid(row=12, column=0, sticky="EW")
-        exit_app_button.grid(row=13, column=0, sticky="EW")
+        self.delete_something_button = ttk.Button(
+            self,
+            text="Delete Something",
+            command=lambda: controller.show_frame(DeleteSomething)
+        )  # switches to DeleteSomething class frame
 
+        self.add_entry_button.grid(row=0, column=0, sticky="EW")
+        self.add_category_button.grid(row=1, column=0, sticky="EW")
+        self.view_entry_button.grid(row=2, column=0, sticky="EW")
+        self.view_categories_button.grid(row=3, column=0, sticky="EW")
+        self.view_titles_button.grid(row=4, column=0, sticky="EW")
+        self.view_entries_button.grid(row=5, column=0, sticky="EW")
+        self.view_category_titles_button.grid(row=6, column=0, sticky="EW")
+        self.view_category_entries_button.grid(row=7, column=0, sticky="EW")
+        self.view_titles_of_date_button.grid(row=8, column=0, sticky="EW")
+        self.view_entries_of_date_button.grid(row=9, column=0, sticky="EW")
+        self.view_category_titles_of_date_button.grid(row=10, column=0, sticky="EW")
+        self.view_category_entries_of_date_button.grid(row=11, column=0, sticky="EW")
+        self.view_category_entries_as_percentage_button.grid(row=12, column=0, sticky="EW")
+        self.exit_app_button.grid(row=13, column=0, sticky="EW")
+        self.delete_something_button.grid(row=0, column=2, sticky="EW")
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
         for child in self.winfo_children():
             child.grid_configure(padx=5, pady=5)
 
@@ -1910,6 +1919,108 @@ class ViewPieChart(ttk.Frame):
             cat_percentage = round(item[3], 2)
             self.cat_string = f"{rating}: {graph_colors[i]} | Category #{item[0]} {cat_name}: {cat_percentage}%"
             self.scrolling_color_key.update_entry_widgets(self.cat_string)
+
+
+class DeleteSomething(ttk.Frame):
+    def __init__(self, container, controller, **kwargs):
+        super().__init__(container, **kwargs)
+
+        self.header_label = ttk.Label(self, text="These options will permanently delete entries and categories.  "
+                                                 "EXERCISE CAUTION.", font=("Segoe UI", 16))
+
+        self.delete_entry_label = ttk.Label(self, text="Delete Entry by ID: ")
+        self.delete_entry_entry = ttk.Entry(self)
+
+        self.delete_category_label = ttk.Label(self, text="Delete Category by ID: ")
+        self.delete_category_entry = ttk.Entry(self)
+
+        self.delete_entry_button = ttk.Button(
+            self,
+            text="Delete Entry",
+            command=lambda: self.delete_entry()
+        )
+
+        self.delete_category_button = ttk.Button(
+            self,
+            text="Delete Category",
+            command=lambda: self.delete_category()
+        )
+
+        self.return_to_main_menu = ttk.Button(
+            self,
+            text="Back to Main Menu",
+            command=lambda: controller.show_frame(MainMenu)
+        )
+
+        self.header_label.grid(row=0, column=1, columnspan=2, rowspan=2, sticky="EW")
+        self.delete_entry_label.grid(row=2, column=0, sticky="E")
+        self.delete_entry_entry.grid(row=2, column=1, sticky="W")
+        self.delete_entry_button.grid(row=2, column=2, columnspan=2, sticky="EW")
+        self.delete_category_label.grid(row=3, column=0, sticky="E")
+        self.delete_category_entry.grid(row=3, column=1, sticky="W")
+        self.delete_category_button.grid(row=3, column=2, columnspan=2, sticky="EW")
+        self.return_to_main_menu.grid(row=5, column=1, columnspan=2, sticky="EW")
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
+        self.columnconfigure(3, weight=2)
+        self.columnconfigure(4, weight=1)
+        self.columnconfigure(5, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
+        self.rowconfigure(2, weight=1)
+        self.rowconfigure(3, weight=1)
+        self.rowconfigure(4, weight=1)
+        self.rowconfigure(5, weight=1)
+
+    def delete_entry(self):
+        entry_id = self.delete_entry_entry.get()
+        if not entry_id:
+            tk.messagebox.showerror(title="Invalid Input",
+                                    message="Please enter an entry ID.")
+            return
+        else:
+            try:
+                title = database.get_entry(connection, entry_id)
+                database.delete_entry(connection, entry_id)
+            except psycopg2.errors.InvalidTextRepresentation:
+                tk.messagebox.showerror(title="Invalid Input",
+                                        message="Please enter a valid entry ID.")
+                return
+            if not title:
+                tk.messagebox.showerror(title=f"Entry {entry_id} Not Found",
+                                        message="Please enter a valid entry ID.")
+                return
+            else:
+                tk.messagebox.showinfo(title="Entry Deleted",
+                                       message=f"Entry ID {entry_id} has been deleted.\nTitle: {title[0][2]}")
+
+    def delete_category(self):
+        category_id = self.delete_category_entry.get()
+        if not category_id:
+            tk.messagebox.showerror(title="Invalid Input",
+                                    message="Please enter a category ID.")
+            return
+        else:
+            try:
+                category_exists = database.get_category(connection, category_id)
+                if not category_exists:
+                    tk.messagebox.showerror(title="Category Not Found",
+                                            message="Please enter a valid category ID.")
+                    return
+                if category_exists:
+                    try:
+                        rows_deleted = database.delete_entries_of_category(connection, category_id)
+                        database.delete_category(connection, category_id)
+                        tk.messagebox.showinfo(title="Category Deleted",
+                                               message=f"Category ID {category_id} and "
+                                                       f"{rows_deleted} entries have been deleted.")
+                    except psycopg2.errors.InvalidTextRepresentation: \
+                        tk.messagebox.showerror(title="Invalid Input",
+                                                message="Please enter a valid category ID.")
+                    return
+            finally:
+                return
 
 
 root = JournalRecorder()
